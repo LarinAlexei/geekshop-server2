@@ -36,7 +36,7 @@ def index(request):
 
 def products(request, pk=None):
     print(pk)
-    file_path = os.path.join(module_dir, 'fixtures/products.json')
+    file_path = os.path.join(module_dir, 'json/products.json')
     products = json.load(open(file_path, encoding='utf-8'))
 
     content = {

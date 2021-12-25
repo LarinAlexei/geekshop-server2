@@ -8,6 +8,16 @@
         </a>
     </li>
     {% endfor %}
+    <!-- Вход и Выход -->
+    {% if user.is_authenticated %}
+    <li>
+        <a href="{% url 'auth:logout' %}"> Выйти </a>
+        {{ user.first_name|default:'Пользователь' }}
+    </li>
+    {% else %}
+    <li>
+        <a href="{% url 'auth:login' %}"> Войти </a>
+    </li>
 
-
+    {% endif %}
 </ul>
