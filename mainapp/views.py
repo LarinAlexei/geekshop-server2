@@ -1,7 +1,9 @@
 import json
-import os
+import os.path
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+
+from basketapp.models import Basket
 from mainapp.models import ProductCategory, Product
 
 # Create your views here.
@@ -36,14 +38,42 @@ def index(request):
 
 def products(request, pk=None):
     print(pk)
-    file_path = os.path.join(module_dir, 'json/products.json')
-    products = json.load(open(file_path, encoding='utf-8'))
+    # file_path = os.path.join(module_dir, 'json/products.json')
+    # products = json.load(open(file_path, encoding='utf-8'))
+
+    title = 'Продукты'
+
+    links_menu = ProductCategory.objects.all()
+
+    basket = []
+    if request.user.is_authenticated:
+        basket = Basket.objects.filter(user=request.user)
+
+    if pk is not None:
+        if pk == 0:
+            products = Product.objects.all().order_by('price')
+            category = {'name': 'все'}
+        else:
+            category = get_object_or_404(ProductCategory, pk=pk)
+            products = Product.objects.filter(category__pk=pk).order_by('price')
+
+        content = {
+            'title': title,
+            'links_menu': links_menu,
+            'main_menu': main_menu,
+            'products': products,
+            'category': category,
+            'basket': basket,
+        }
+        return render(request, 'mainapp/products_list.html', content)
+
+    same_products = Product.objects.all()[:5]
 
     content = {
-        'title': 'Продукты',
+        'title': title,
         'links_menu': links_menu,
         'main_menu': main_menu,
-        'products': products
+        'same_products': same_products,
     }
     return render(request, 'mainapp/products.html', content)
 
