@@ -1,12 +1,23 @@
 <ul class="menu">
 
-{% for link in menu_main %}
+    {% for section in main_menu %}
     <li>
-        <a href="{% url link.menu_session %}"
-           class="{% if request.resolver_match.url_name == link.menu_session %} active {% endif %} %}">
-            {{ link.name }}
+        <a href="{% url section.menu_section %}"
+           class="{% if request.resolver_match.url_name == section.menu_section %} active {% endif %}">
+            {{ section.name }}
         </a>
     </li>
     {% endfor %}
+    <!-- Вход и Выход -->
+    {% if user.is_authenticated %}
+    <li>
+        <a href="{% url 'auth:logout' %}"> Выйти </a>
+        {{ user.first_name|default:'Пользователь' }}
+    </li>
+    {% else %}
+    <li>
+        <a href="{% url 'auth:login' %}"> Войти </a>
+    </li>
 
+    {% endif %}
 </ul>

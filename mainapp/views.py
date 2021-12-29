@@ -1,4 +1,8 @@
+import json
+import os
+
 from django.shortcuts import render
+from mainapp.models import ProductCategory, Product
 
 # Create your views here.
 
@@ -10,26 +14,36 @@ links_menu = [
     {'href': 'products_classic', 'name': 'Классика'},
 ]
 
-menu_main = [
-    {'menu_session': 'main', 'name': 'Главная'},
-    {'menu_session': 'products', 'name': 'Продукты'},
-    {'menu_session': 'contact', 'name': 'Контакты'},
+main_menu = [
+    {'menu_section': 'index', 'main_urls': 'index', 'name': 'Главная'},
+    {'menu_section': 'products:index', 'main_urls': 'products', 'name': 'Продукты'},
+    {'menu_section': 'contact', 'main_urls': 'contact', 'name': 'Контакты'},
 ]
 
+module_dir = os.path.dirname(__file__)
 
-def main(request):
+
+def index(request):
+    products = Product.objects.all()[:3]
     content = {
         'title': 'Главная',
-        'menu_main': menu_main
+        'main_menu': main_menu,
+        'products': products,
+
     }
     return render(request, 'mainapp/index.html', content)
 
 
-def products(request):
+def products(request, pk=None):
+    print(pk)
+    file_path = os.path.join(module_dir, 'json/products.json')
+    products = json.load(open(file_path, encoding='utf-8'))
+
     content = {
         'title': 'Продукты',
         'links_menu': links_menu,
-        'menu_main': menu_main,
+        'main_menu': main_menu,
+        'products': products
     }
     return render(request, 'mainapp/products.html', content)
 
@@ -37,7 +51,7 @@ def products(request):
 def contact(request):
     content = {
         'title': 'Контакты',
-        'menu_main': menu_main
+        'main_menu': main_menu
     }
     return render(request, 'mainapp/contact.html', content)
 
