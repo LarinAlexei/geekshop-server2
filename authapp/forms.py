@@ -3,7 +3,7 @@ import random
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
 from django.forms import forms
 from django.core.validators import validate_image_file_extension
-from authapp.models import ShopUser
+from authapp.models import ShopUser, ShopUserProfile
 import re
 
 
@@ -39,7 +39,7 @@ class ShopUserRegisterForm(UserCreationForm):
         return data
 
     def save(self):
-        user = super(ShopUserRegisterForm, self).save()
+        user = super().save()
 
         user.is_active = False
         salt = hashlib.sha1(str(random.random()).encode('utf8')).hexdigest()[:6]
@@ -59,6 +59,9 @@ class ShopUserEditForm(UserChangeForm):
 
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form_control'
+            field.help_text = ''
+            if field_name == 'password':
+                field.widget = forms.HiddenInput()
 
     def clean_age(self):
         data = self.cleaned_data['age']
@@ -66,6 +69,18 @@ class ShopUserEditForm(UserChangeForm):
         if data < 18:
             raise forms.ValidationError('Увы но Вам еще нет 18 лет!')
         return data
+
+
+class ShopUserProfileEditForm(forms.ModelForm):
+    class Meta:
+        model = ShopUserProfile
+        fields = ('tagline', 'about_me', 'gender')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for _, field in self.fields.items():
+            field.widget.attrs['class'] = 'form_control'
+            field.help_text = ''
 
     # Тут я добавил валидацию по имени, разрешаем ввод имени только латинницей и не менее 2 символов
     # def clean_username(self):

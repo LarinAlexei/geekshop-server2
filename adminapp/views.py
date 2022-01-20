@@ -40,6 +40,7 @@ class UsersListView(ListView):
         return super().dispatch(*args, **kwargs)
 
 
+@user_passes_test(lambda u: u.is_superuser)
 def user_create(request):
     title = 'пользователи / создание'
     if request.method == 'POST':
@@ -53,11 +54,12 @@ def user_create(request):
     return render(request, 'adminapp/user_update.html', content)
 
 
+@user_passes_test(lambda u: u.is_superuser)
 def user_update(request, pk):
     title = 'пользователи / редактирование'
     edit_user = get_object_or_404(ShopUser, pk=pk)
     if request.method == 'POST':
-        edit_form = ShopUserEditForm(request.POST, request.FILES, instance=edit_user)
+        edit_form = ShopUserAdminEditForm(request.POST, request.FILES, instance=edit_user)
         if edit_form.is_valid():
             edit_form.save()
             return HttpResponseRedirect(reverse('admin:user_update', args=[edit_user.pk]))
@@ -67,14 +69,15 @@ def user_update(request, pk):
     return render(request, 'adminapp/user_update.html', content)
 
 
+@user_passes_test(lambda u: u.is_superuser)
 def user_delete(request, pk):
     title = 'пользователи / удаление'
     user = get_object_or_404(ShopUser, pk=pk)
     if request.method == 'POST':
-        # user.delete
+        user.delete()
         # делаем неактивынм вместо удаления
-        user.is_active = False
-        user.save()
+        # user.is_active = False
+        # user.save()
         return HttpResponseRedirect(reverse('admin:users'))
     content = {
         'title': title,
@@ -84,7 +87,7 @@ def user_delete(request, pk):
 
 
 # Категории
-
+@user_passes_test(lambda u: u.is_superuser)
 def categories(request):
     title = 'админка / категории'
     categories_list = ProductCategory.objects.all()
@@ -165,7 +168,7 @@ class ProductCategoryDeleteView(DeleteView):
 
 
 # Продукты
-
+@user_passes_test(lambda u: u.is_superuser)
 def products(request, pk):
     title = 'админка/продукт'
 
