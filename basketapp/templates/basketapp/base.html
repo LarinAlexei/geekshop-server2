@@ -1,36 +1,37 @@
 <!DOCTYPE html>
 {% load static %}
+
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>
-    {% block title %}
-      {{ title|title }}
-    {% endblock %}
-  </title>
-  {% block css %}
+    <meta charset="utf-8">
+    <title>
+        {% block title %}
+        {{ title|title }}
+        {% endblock %}
+    </title>
+    {% block css %}
     <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
     <link rel="stylesheet" href="{% static 'fonts/font-awesome/css/font-awesome.css' %}">
-  {% endblock %}
-  {% block js %}
+    {% endblock %}
+    {% block js %}
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="{% static 'js/basket_scripts.js' %}"></script>
-  {% endblock %}
+    {% endblock %}
 </head>
 <body>
-  <div class="basket_container">
+<div class="basket_container">
     <div class="h2 text-center head">
-      Ваша корзина,
-      {% if user.first_name %}
+        Ваша корзина,
+        {% if user.first_name %}
         {{ user.first_name|title}}
-      {% else %}
+        {% else %}
         Пользователь
-      {% endif %}
+        {% endif %}
     </div>
 
     {% block content %}
     {% endblock %}
-  </div>
+</div>
 </body>
 </html>
