@@ -49,6 +49,7 @@ def get_context_data(self, **kwargs):
             for form, cart_item in zip(formset.forms, basket_items):
                 form.initial['product'] = basket_items.product
                 form.initial['quantity'] = basket_items.quantity
+                form.initial['price'] = basket_items.product.price
 
             basket_items.delete()
         else:
@@ -97,13 +98,10 @@ class OrderItemsUpdate(UpdateView):
         if self.request.POST:
             formset = OrderFormSet(self.request.POST, instance=self.object)
         else:
-            basket_items = Basket.get_items(self.request.user)
-            if len(basket_items):
-                OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=len(basket_items))
-                formset = OrderFormSet(instance=self.object)
-                basket_items.delete()
-            else:
-                formset = OrderFormSet(instance=self.object)
+            formset = OrderFormSet(instance=self.object)
+            for form in formset.forms:
+                if form.instance.pk:
+                    form.initial['price'] = form.instance.product.price
 
         data['orderitems'] = formset
         return data
