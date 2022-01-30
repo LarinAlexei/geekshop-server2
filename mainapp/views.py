@@ -4,6 +4,7 @@ import random
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from basketapp.models import Basket
+from django.http.response import JsonResponse
 from mainapp.models import ProductCategory, Product
 
 
@@ -155,3 +156,12 @@ def product(request, pk):
     }
 
     return render(request, 'mainapp/product.html', content)
+
+
+def product_price(request, pk):
+    products = Product.objects.filter(pk=pk)
+
+    if products:
+        return JsonResponse({'price': products[0].price})
+    else:
+        return JsonResponse({'price': 0})
