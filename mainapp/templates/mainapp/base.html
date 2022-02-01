@@ -21,14 +21,18 @@
 </head>
 <body>
 	<div class="container">
-
-        {% block menu %}
-
+		{% block menu %}
+			<div class="hero-white">
+				<div class="header clearfix">
+					{% include 'mainapp/includes/inc_menu.html' %}
+				</div>
+			</div>
         {% endblock %}
-
+        <div class="content">
         {% block content %}
 
         {% endblock %}
+        </div>
 
 	</div>
 
@@ -49,7 +53,7 @@
                 </form>
             </div>
         </div>
-        <p class="small">&copy; GB 2021</p>
+        <p class="small">&copy; GB 2022</p>
         <div class="social">
             <a href="#" class="social1"></a>
             <a href="#" class="social2"></a>

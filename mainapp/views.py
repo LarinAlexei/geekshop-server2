@@ -54,7 +54,7 @@ module_dir = os.path.dirname(__file__)
 
 
 def index(request):
-    products = Product.objects.all()[:3]
+    products = (Product.objects.all().select_related('category')[:3])
     content = {
         'title': 'Главная',
         'main_menu': main_menu,
