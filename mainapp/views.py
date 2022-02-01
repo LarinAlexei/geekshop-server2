@@ -92,7 +92,6 @@ def products(request, pk=None, page=1):
             'main_menu': main_menu,
             'products': products_paginator,
             'category': category,
-            'basket': basket,
         }
         return render(request, 'mainapp/products_list.html', content)
 
