@@ -26,9 +26,11 @@ def save_user_profile(backend, user, response, *args, **kwargs):
 
     resp = requests.get(api_url)
 
+    #  проверяем ответ от request
     if resp.status_code != 200:
         return
 
+    # если все ок, то продолжаем
     data = resp.json()['response'][0]
     print(data)
     if data['sex']:
@@ -38,11 +40,11 @@ def save_user_profile(backend, user, response, *args, **kwargs):
     # задание №5
     if data['domain']:
         url_vk = ''.join(['https://vk.com/', data['domain']])
-        user.shopuserprofile.my_social_page = url_vk
+        user.shopuserprofile.url_social_page = url_vk
 
     if data['about']:
-        # "о себе"
-        user.shopuserprofile.aboutMe = data['about'] + '\n' + url_vk
+        # ссылку на страницу выведем в поле "о себе"
+        user.shopuserprofile.aboutMe = data['about'] + '\n'+ url_vk
 
     if data['bdate']:
         bdate = datetime.strptime(data['bdate'], '%d.%m.%Y').date()

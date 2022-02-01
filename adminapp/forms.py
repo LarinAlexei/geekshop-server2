@@ -16,7 +16,7 @@ class ProductCategoryEditForm(forms.ModelForm):
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(ProductCategoryEditForm, self).__init__(*args, **kwargs)
         # print(self.fields)
         for field_name, field in self.fields.items():
             # print(field_name, field)
@@ -30,7 +30,7 @@ class ProductEditForm(forms.ModelForm):
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(ProductEditForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
             field.help_text = ''

@@ -37,6 +37,7 @@ urlpatterns = [
     path('products_modern', products, name="products_modern"),
     path('products_classic', products, name="products_classic"),
     path('auth/', include('authapp.urls', namespace='auth')),
+    path('order/', include('ordersapp.urls', namespace='order')),
     path('basket/', include('basketapp.urls', namespace='basket')),
 
 ]

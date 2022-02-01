@@ -76,7 +76,7 @@ def edit(request):
             return HttpResponseRedirect(reverse('auth:edit'))
     else:
         edit_form = ShopUserEditForm(instance=request.user)
-        profile_form = ShopUserProfileEditForm(instance=request.user.profile)
+        profile_form = ShopUserProfileEditForm(instance=request.user)
 
     content = {'title': title, 'edit_form': edit_form, 'profile_form': profile_form}
 

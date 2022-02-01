@@ -43,7 +43,7 @@ class ShopUserProfile(models.Model):
     url_social_page = models.TextField(verbose_name='ссылка на социальную сеть', blank=True)
 
     @receiver(post_save, sender=ShopUser)
-    def create_or_save_user_profile(sender, instance, created, **kwargs):
+    def create_user_profile(sender, instance, created, **kwargs):
         if created:
             ShopUserProfile.objects.create(user=instance)
 
