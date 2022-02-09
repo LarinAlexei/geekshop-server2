@@ -1,10 +1,14 @@
 import json
 import os.path
 import random
+
+from django.conf import settings
+from django.core.cache import cache
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from basketapp.models import Basket
 from django.http.response import JsonResponse
+from django.utils.functional import cached_property
 from mainapp.models import ProductCategory, Product
 
 
@@ -14,9 +18,21 @@ from mainapp.models import ProductCategory, Product
 JSON_PATH = 'mainapp/json'
 
 
-def load_from_json(file_name):
+def read_json_from_file(file_name):
     with open(os.path.join(JSON_PATH, file_name + '.json'), 'r') as infile:
         return json.load(infile)
+
+
+def load_from_json(file_name):
+    if settings.LOW_CACHE:
+        key = f'file__{file_name}'
+        data = cache.get(key)
+        if data is None:
+            data = read_json_from_file(file_name)
+            cache.set(key, data)
+        return data
+    else:
+        return read_json_from_file(file_name)
 
 
 def get_basket(user):
@@ -115,7 +131,7 @@ def products(request, pk=None, page=1):
         'title': title,
         'links_menu': links_menu,
         'main_menu': main_menu,
-        'same_products': same_products,
+        'same_products': same_products.select_related,
         'hot_product': hot_product,
     }
     return render(request, 'mainapp/products.html', content)
