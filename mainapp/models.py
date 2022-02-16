@@ -1,4 +1,6 @@
 from django.db import models
+from django.dispatch import receiver
+from django.db.models.signals import pre_save
 
 
 # Create your models here.
@@ -25,7 +27,14 @@ class Product(models.Model):
     def __str__(self):
         return f"{self.name} ({self.category.name})"
 
+    @receiver(pre_save, sender=ProductCategory)
+    def update_is_active_on_products(sender, instance, **kwargs):
+        if instance.pk:
+            if instance.is_active:
+                instance.product_set.update(is_active=True)
+            else:
+                instance.product_set.update(is_active=False)
+
     @staticmethod
     def get_items():
-        return Product.objects.filter(is_active=True). \
-            order_by('category', 'name')
+        return Product.objects.filter(is_active=True).order_by('category', 'name')
