@@ -238,4 +238,4 @@ CACHE_MIDDLEWARE_KEY_PREFIX = 'geekshop'
 #    }
 # }
 
-LOW_CACHE = True
+LOW_CACHE = False

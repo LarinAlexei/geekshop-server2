@@ -28,7 +28,10 @@ class Product(models.Model):
         return f"{self.name} ({self.category.name})"
 
     @receiver(pre_save, sender=ProductCategory)
-    def update_is_active_on_products(sender, instance, **kwargs):
+    def update_is_active_on_products(sender, update_fields, instance, **kwargs):
+        if update_fields not in ['is_active']:
+            return
+
         if instance.pk:
             if instance.is_active:
                 instance.product_set.update(is_active=True)
