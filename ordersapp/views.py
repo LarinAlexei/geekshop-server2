@@ -32,49 +32,47 @@ class OrderItemsCreate(CreateView):
     fields = []
     success_url = reverse_lazy('order:orders_list')
 
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        OrderFormSet = inlineformset_factory(Order, OrderItem,
+                                             form=OrderItemForm, extra=1)
 
-def get_context_data(self, **kwargs):
-    data = super().get_context_data(**kwargs)
-    OrderFormSet = inlineformset_factory(Order, OrderItem,
-                                         form=OrderItemForm, extra=1)
-
-    if self.request.POST:
-        formset = OrderFormSet(self.request.POST)
-    else:
-        basket_items = Basket.get_items(self.request.user)
-        if len(basket_items):
-            OrderFormSet = inlineformset_factory(Order, OrderItem,
-                                                 form=OrderItemForm, extra=len(basket_items))
-            formset = OrderFormSet()
-            for form, cart_item in zip(formset.forms, basket_items):
-                form.initial['product'] = basket_items.product
-                form.initial['quantity'] = basket_items.quantity
-                form.initial['price'] = basket_items.product.price
-
-            basket_items.delete()
+        if self.request.POST:
+            formset = OrderFormSet(self.request.POST)
         else:
-            formset = OrderFormSet()
+            basket_items = Basket.get_items(self.request.user)
+            if len(basket_items):
+                OrderFormSet = inlineformset_factory(Order, OrderItem,
+                                                     form=OrderItemForm, extra=len(basket_items))
+                formset = OrderFormSet()
+                for form, basket_item in zip(formset.forms, basket_items):
+                    form.initial['product'] = basket_item.product
+                    form.initial['quantity'] = basket_item.quantity
+                    form.initial['price'] = basket_item.product.price
 
-    data['orderitems'] = formset
-    return data
+                basket_items.delete()
+            else:
+                formset = OrderFormSet()
 
+        data['orderitems'] = formset
+        return data
 
-def form_valid(self, form):
-    context = self.get_context_data()
-    orderitems = context['orderitems']
+    def form_valid(self, form):
+        context = self.get_context_data()
+        orderitems = context['orderitems']
 
-    with transaction.atomic():
-        form.instance.user = self.request.user
-        self.object = form.save()
-        if orderitems.is_valid():
-            orderitems.instance = self.object
-            orderitems.save()
+        with transaction.atomic():
+            form.instance.user = self.request.user
+            self.object = form.save()
+            if orderitems.is_valid():
+                orderitems.instance = self.object
+                orderitems.save()
 
-    # удаляем пустой заказ
-    if self.object.get_total_cost() == 0:
-        self.object.delete()
+        # удаляем пустой заказ
+        if self.object.get_total_cost() == 0:
+            self.object.delete()
 
-    return super(OrderItemsCreate, self).form_valid(form)
+        return super(OrderItemsCreate, self).form_valid(form)
 
 
 class OrderDelete(DeleteView):
